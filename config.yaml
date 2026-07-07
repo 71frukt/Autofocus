@@ -5,7 +5,7 @@ optics:
   datasets_dir:         "datasets/bom_bom"
   reference_image_path: "datasets/bom_bom/reference.png"
   max_distance:         100.0
-  step_size:            2.0
+  step_size:            1.0
   ideal_focus_distance: 45.0
-  blur_sensitivity:     1.0
+  blur_sensitivity:     0.4
 

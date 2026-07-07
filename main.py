@@ -5,6 +5,7 @@ import numpy as np
 
 from src.data.optisc_dataset_manager import OpticsDatasetManager
 from src.autofocus.sharpness_metrics import calculate_lapd
+from src.autofocus.focus_lsm_search  import choose_pivot_points, find_parabola_maximum
 
 
 def main() -> None:
@@ -28,8 +29,8 @@ def main() -> None:
     # Генерация 16 последовательных шагов фокусировки
     motor_step_size: float = float(optics_cfg["step_size"])
     max_distance:    float = float(optics_cfg["max_distance"])
-    step_size:       float = max_distance / 16.0 / motor_step_size
-    num_steps:       int   = int(round(max_distance / step_size)) + 1
+    num_steps:       int   = 16
+    step_size:       float = max_distance / num_steps
 
     roi: tuple[int, int] = tuple(global_cfg["roi"])
 
@@ -37,6 +38,8 @@ def main() -> None:
     print("-" * 70)
     print(f"{'Step':<8}{'Distance (mm)':<18}{'LAPD Score':<20}")
     print("-" * 70)
+
+    points: np.ndarray = np.zeros((num_steps, 2), dtype=np.float32)
 
     for step in range(num_steps):
         distance: float = step * step_size
@@ -49,8 +52,14 @@ def main() -> None:
         # 2. Передаем полученный кадр и ROI в изолированную функцию метрики
         lapd_score: float = calculate_lapd(frame, roi)
 
-        # Выводим логи в виде форматированной таблицы
-        print(f"[{step:02d}/{num_steps - 1}]   {distance:<18.2f}{lapd_score:<20.2f}")
+        points[step] = [distance, lapd_score]
+    
+        print(f"[{step:2}]    {distance:<18.2f}{lapd_score:<20.2f}")
+
+    print("-" * 70)
+
+    ideal_dist: float = find_parabola_maximum(choose_pivot_points(points))
+    print(f"Maximum image sharpness at a distance {ideal_dist:.2f}")
 
     print("-" * 70)
 

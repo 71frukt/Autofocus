@@ -42,7 +42,10 @@ class OpticalSystemModel:
 
     def calculate_frame(self, distance: float) -> np.ndarray:
         """Calculates Gaussian convolution based on distance from the ideal focus point"""
-        distance_from_focus: float = abs(distance - self.IDEAL_FOCUS_DISTANCE)
+
+        step_id: int = self.distance_to_step_id(distance)
+        discretized_distance: float = step_id * self.STEP_SIZE
+        distance_from_focus: float = abs(discretized_distance - self.IDEAL_FOCUS_DISTANCE)
         
         if distance_from_focus < (self.STEP_SIZE / 2.0):
             return self._REF_IMAGE.copy()
