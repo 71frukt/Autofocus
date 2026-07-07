@@ -1,10 +1,11 @@
 global:
-  resolution: [1920, 1080]
-  roi:        [200,  200 ]
+  roi: [200, 200]
 
 optics:
+  datasets_dir:         "datasets/bom_bom"
   reference_image_path: "datasets/bom_bom/reference.png"
-  max_distance_mm: 100.0
-  step_size_mm: 2.0
-  ideal_focus_distance_mm: 45.0
-  blur_sensitivity: 0.15
+  max_distance:         100.0
+  step_size:            2.0
+  ideal_focus_distance: 45.0
+  blur_sensitivity:     1.0
+
