@@ -5,7 +5,7 @@ import hashlib
 from typing import Any, Optional
 import cv2
 import numpy as np
-from src.optics_model import OpticalSystemModel
+from src.core.optics_model import OpticalSystemModel
 
 
 
