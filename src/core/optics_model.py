@@ -11,7 +11,6 @@ class OpticalSystemModel:
         step_size:            float,
         max_distance:         float,
         ideal_focus_distance: float,
-        roi_size:             tuple[int, int],
         blur_sensitivity:     float = 0.5
     ) -> None:
         if step_size <= 0.0:
@@ -29,7 +28,6 @@ class OpticalSystemModel:
         self.STEP_SIZE:            float = step_size
         self.MAX_DISTANCE:         float = max_distance
         self.IDEAL_FOCUS_DISTANCE: float = ideal_focus_distance
-        self.ROI_SIZE:             tuple[int, int] = roi_size
         self.BLUR_SENSITIVITY:     float = blur_sensitivity
 
     def distance_to_step_id(self, distance: float) -> int:

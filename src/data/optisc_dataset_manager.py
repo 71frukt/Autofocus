@@ -4,9 +4,11 @@ import shutil
 import hashlib
 from typing import Any, Optional
 import cv2
+from pathlib import Path
 import numpy as np
-from src.core.optics_model import OpticalSystemModel
 
+from src.core.optics_model   import OpticalSystemModel
+from src.data.config_checker import GlobalConfig, OpticsConfig
 
 
 """
@@ -38,32 +40,38 @@ def _compute_pixel_matrix_hash(image_path: str) -> str:
 class OpticsDatasetManager:
     """Proxy encapsulating dataset versioning, hashing, and filesystem caching."""
 
-    def __init__(self, global_cfg: dict[str, Any], optics_cfg: dict[str, Any]) -> None:
-        self._base_dir:     str = optics_cfg["datasets_dir"]
-        self._raw_ref_path: str = optics_cfg["reference_image_path"]
+    def __init__(self, optics_cfg: OpticsConfig) -> None:
+        pythonpath: str = os.environ.get("PYTHONPATH", "")
+
+        if pythonpath:
+            self._project_root: Path = Path(pythonpath.split(":")[0]).resolve()
+        else:
+            self._project_root = Path(__file__).resolve().parent.parent.parent
+
+        self._base_dir:     str = os.path.normpath(os.path.join(str(self._project_root), optics_cfg.datasets_dir))
+        self._raw_ref_path: str = os.path.normpath(os.path.join(str(self._project_root), optics_cfg.reference_image_path))
         
-        self._global_cfg: dict[str, Any] = global_cfg
-        self._optics_cfg: dict[str, Any] = optics_cfg
+        self._optics_cfg: OpticsConfig = optics_cfg
         
         self._optics_model: Optional[OpticalSystemModel] = None
         self._disk_saved_steps: set[int] = set()
 
-        manifest: dict[str, Any] = self._generate_manifest(global_cfg, optics_cfg)
+        manifest: dict[str, Any] = self._generate_manifest(optics_cfg)
         self._dataset_dir, self._active_ref_path = self._resolve_directory(manifest)
         
         self._scan_existing_steps()
 
-    def _generate_manifest(self, global_cfg: dict[str, Any], optics_cfg: dict[str, Any]) -> dict[str, Any]:
+    def _generate_manifest(self, optics_cfg: OpticsConfig) -> dict[str, Any]:
         """Generates a complete dataset manifest and calculates its final hash"""
+
         ref_pixel_hash: str = _compute_pixel_matrix_hash(self._raw_ref_path)
 
         core_parameters: dict[str, Any] = {
             "reference_pixel_hash": ref_pixel_hash,
-            "max_distance":         float(optics_cfg["max_distance"        ]),
-            "step_size":            float(optics_cfg["step_size"           ]),
-            "ideal_focus_distance": float(optics_cfg["ideal_focus_distance"]),
-            "blur_sensitivity":     float(optics_cfg["blur_sensitivity"    ]),
-            "roi":                  list (global_cfg["roi"                 ]),
+            "max_distance":         float(optics_cfg.max_distance        ),
+            "step_size":            float(optics_cfg.step_size           ),
+            "ideal_focus_distance": float(optics_cfg.ideal_focus_distance),
+            "blur_sensitivity":     float(optics_cfg.blur_sensitivity    ),
         }
 
         serialized_params: str = json.dumps(core_parameters, sort_keys=True)
@@ -149,17 +157,16 @@ class OpticsDatasetManager:
                 
             self._optics_model = OpticalSystemModel(
                 reference_image      = ref_img,
-                step_size            = float(self._optics_cfg["step_size"]),
-                max_distance         = float(self._optics_cfg["max_distance"]),
-                ideal_focus_distance = float(self._optics_cfg["ideal_focus_distance"]),
-                roi_size             = tuple(self._global_cfg["roi"]),
-                blur_sensitivity     = float(self._optics_cfg["blur_sensitivity"])
+                step_size            = float(self._optics_cfg.step_size           ),
+                max_distance         = float(self._optics_cfg.max_distance        ),
+                ideal_focus_distance = float(self._optics_cfg.ideal_focus_distance),
+                blur_sensitivity     = float(self._optics_cfg.blur_sensitivity    )
             )
         return self._optics_model
 
     def get_frame(self, distance: float) -> np.ndarray:
-        step_size:    float = float(self._optics_cfg["step_size"])
-        max_distance: float = float(self._optics_cfg["max_distance"])
+        step_size:    float = float(self._optics_cfg.step_size)
+        max_distance: float = float(self._optics_cfg.max_distance)
         
         if not (0.0 <= distance <= max_distance):
             raise ValueError(f"Requested coordinate {distance:.2f} mm is out of bounds [0.0, {max_distance:.2f}]")
@@ -184,3 +191,5 @@ class OpticsDatasetManager:
     @property
     def dataset_dir(self) -> str:
         return self._dataset_dir
+    
+

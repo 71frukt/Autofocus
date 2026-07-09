@@ -1,6 +1,6 @@
 import numpy as np
 
-def choose_pivot_points(points: np.ndarray) -> np.ndarray:
+def choose_pivot_points(points: np.ndarray, pivot_points_num: int) -> np.ndarray:
     if points.ndim != 2 or points.shape[1] != 2:
         raise ValueError(f"Expected a matrix of shape (N, 2), got {points.shape}")
 
@@ -10,10 +10,10 @@ def choose_pivot_points(points: np.ndarray) -> np.ndarray:
     # Извлекаем вектор y (второй столбец)
     y_values = points[:, 1]
 
-    # np.argsort sorts in ascending order, takes the last 3 indices, and expands them
-    top_3_indices = np.argsort(y_values)[-3:][::-1]
+    # np.argsort sorts in ascending order, takes the last pivot_points_num indices, and expands them
+    top_indices = np.argsort(y_values)[-pivot_points_num:][::-1]
 
-    return points[top_3_indices]
+    return points[top_indices]
 
 
 def find_parabola_maximum(points: np.ndarray) -> float:
@@ -24,6 +24,7 @@ def find_parabola_maximum(points: np.ndarray) -> float:
     x = points[:, 0]
     y = points[:, 1]
 
+    # degree of polynomial 2 -- parabola 
     a, b, c = np.polyfit(x, y, 2)
 
     if a >= 0:
