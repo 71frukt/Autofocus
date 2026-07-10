@@ -6,9 +6,29 @@ import yaml
 
 @dataclass(frozen=True)
 class GlobalConfig:
-    img_resolution: tuple[int, int]
-    roi:            tuple[int, int]
     simulator:      str
+
+    def __post_init__(self) -> None:
+        
+        valid_simulators: Final[list[str]] = ["icarus", "verilator", "questa", "modelsim"]
+        if self.simulator not in valid_simulators:
+            raise ValueError(
+                f"Unsupported simulator backend '{self.simulator}', "
+                f"use one of {valid_simulators}"
+            )
+
+
+@dataclass(frozen=True)
+class OpticsConfig:
+    img_resolution:       tuple[int, int]
+    roi:                  tuple[int, int]
+    datasets_dir:         str
+    reference_image_path: str
+    max_distance:         float
+    step_size:            float
+    ideal_focus_distance: float
+    blur_sensitivity:     float
+
 
     def __post_init__(self) -> None:
         if len(self.img_resolution) != 2:
@@ -23,25 +43,6 @@ class GlobalConfig:
         if self.roi[0] <= 0 or self.roi[1] <= 0:
             raise ValueError(f"Roi dimensions must be strictly positive, got {self.roi}")
         
-        valid_simulators: Final[list[str]] = ["icarus", "verilator", "questa", "modelsim"]
-        if self.simulator not in valid_simulators:
-            raise ValueError(
-                f"Unsupported simulator backend '{self.simulator}', "
-                f"use one of {valid_simulators}"
-            )
-
-
-@dataclass(frozen=True)
-class OpticsConfig:
-    datasets_dir:         str
-    reference_image_path: str
-    max_distance:         float
-    step_size:            float
-    ideal_focus_distance: float
-    blur_sensitivity:     float
-
-
-    def __post_init__(self) -> None:
         if self.max_distance <= 0.0:
             raise ValueError(f"Maximum distance must be positive, got {self.max_distance}")
 
@@ -79,13 +80,13 @@ class AppConfig:
         try:
             g_data: dict[str, Any] = raw_data["global"]
             global_obj: GlobalConfig = GlobalConfig(
-                img_resolution = tuple(g_data["img_resolution"]),
-                roi            = tuple(g_data["roi"]),
                 simulator      = str  (g_data["simulator"])
             )
 
             o_data: dict[str, Any] = raw_data["optics"]
             optics_obj: OpticsConfig = OpticsConfig(
+                img_resolution       = tuple(o_data["img_resolution"]),
+                roi                  = tuple(o_data["roi"]),
                 datasets_dir         = str  (o_data["datasets_dir"        ]),
                 reference_image_path = str  (o_data["reference_image_path"]),
                 max_distance         = float(o_data["max_distance"        ]),

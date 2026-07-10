@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1783594984" />
-    <testcase name="lapd_tb" classname="lapd_tb" file="/home/frukt71/Github/Autofocus/rtl_lapd/lapd_tb.py" lineno="13" time="1.8293609619140625" sim_time_ns="345.0" ratio_time="188.5904461627005" />
+    <property name="random_seed" value="1783722004" />
+    <testcase name="lapd_tb" classname="lapd_tb" file="/home/frukt71/Github/Autofocus/rtl_lapd/lapd_tb.py" lineno="12" time="37.29290318489075" sim_time_ns="2155225.0" ratio_time="57791.826753600435" />
   </testsuite>
 </testsuites>

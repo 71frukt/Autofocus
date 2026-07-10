@@ -6,9 +6,10 @@ from typing import Any, Optional
 import cv2
 from pathlib import Path
 import numpy as np
+import dataclasses
 
 from src.core.optics_model   import OpticalSystemModel
-from src.data.config_checker import GlobalConfig, OpticsConfig
+from src.data.config_checker import OpticsConfig
 
 
 """
@@ -66,13 +67,14 @@ class OpticsDatasetManager:
 
         ref_pixel_hash: str = _compute_pixel_matrix_hash(self._raw_ref_path)
 
+        config_dict = dataclasses.asdict(optics_cfg)
+
+        EXCLUDED_KEYS = {"datasets_dir", "reference_image_path"}
         core_parameters: dict[str, Any] = {
-            "reference_pixel_hash": ref_pixel_hash,
-            "max_distance":         float(optics_cfg.max_distance        ),
-            "step_size":            float(optics_cfg.step_size           ),
-            "ideal_focus_distance": float(optics_cfg.ideal_focus_distance),
-            "blur_sensitivity":     float(optics_cfg.blur_sensitivity    ),
+            k: v for k, v in config_dict.items() if k not in EXCLUDED_KEYS
         }
+
+        core_parameters["reference_pixel_hash"] = ref_pixel_hash
 
         serialized_params: str = json.dumps(core_parameters, sort_keys=True)
         full_dataset_hash: str = hashlib.sha256(serialized_params.encode("utf-8")).hexdigest()
@@ -157,6 +159,7 @@ class OpticsDatasetManager:
                 
             self._optics_model = OpticalSystemModel(
                 reference_image      = ref_img,
+                target_resolution    = self._optics_cfg.img_resolution,
                 step_size            = float(self._optics_cfg.step_size           ),
                 max_distance         = float(self._optics_cfg.max_distance        ),
                 ideal_focus_distance = float(self._optics_cfg.ideal_focus_distance),
