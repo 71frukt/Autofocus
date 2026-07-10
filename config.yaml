@@ -1,5 +1,6 @@
 global:
-  roi: [200, 200]
+  img_resolution: [1920, 1080]
+  roi:            [200 , 200 ]
   simulator: "icarus"
 
 optics:

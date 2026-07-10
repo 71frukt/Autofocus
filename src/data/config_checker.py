@@ -6,10 +6,17 @@ import yaml
 
 @dataclass(frozen=True)
 class GlobalConfig:
-    roi: tuple[int, int]
-    simulator: str
+    img_resolution: tuple[int, int]
+    roi:            tuple[int, int]
+    simulator:      str
 
     def __post_init__(self) -> None:
+        if len(self.img_resolution) != 2:
+            raise ValueError(f"img_resolution dimension count must be exactly 2, got {len(self.img_resolution)}")
+
+        if self.img_resolution[0] <= 0 or self.img_resolution[1] <= 0:
+            raise ValueError(f"img_resolution dimensions must be strictly positive, got {self.img_resolution}")
+
         if len(self.roi) != 2:
             raise ValueError(f"Roi dimension count must be exactly 2, got {len(self.roi)}")
 
@@ -72,8 +79,9 @@ class AppConfig:
         try:
             g_data: dict[str, Any] = raw_data["global"]
             global_obj: GlobalConfig = GlobalConfig(
-                roi       = tuple(g_data["roi"]),
-                simulator = str  (g_data["simulator"])
+                img_resolution = tuple(g_data["img_resolution"]),
+                roi            = tuple(g_data["roi"]),
+                simulator      = str  (g_data["simulator"])
             )
 
             o_data: dict[str, Any] = raw_data["optics"]
