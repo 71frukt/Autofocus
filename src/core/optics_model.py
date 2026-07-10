@@ -8,6 +8,7 @@ class OpticalSystemModel:
     def __init__(
         self,
         reference_image:      np.ndarray,
+        target_resolution:    tuple[int, int],
         step_size:            float,
         max_distance:         float,
         ideal_focus_distance: float,
@@ -24,7 +25,9 @@ class OpticalSystemModel:
                 f"step_size[{step_size}] > max_distance[{max_distance}]"
             )
 
-        self._REF_IMAGE:           np.ndarray = reference_image
+        self._REF_IMAGE:           np.ndarray = cv2.resize(reference_image, 
+                                                           (target_resolution[0], target_resolution[1]),  
+                                                           interpolation=cv2.INTER_LINEAR)
         self.STEP_SIZE:            float = step_size
         self.MAX_DISTANCE:         float = max_distance
         self.IDEAL_FOCUS_DISTANCE: float = ideal_focus_distance
