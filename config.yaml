@@ -1,9 +1,9 @@
 global:
-  img_resolution: [1920, 1080]
-  roi:            [200 , 200 ]
   simulator: "icarus"
 
 optics:
+  img_resolution:       [100, 100]
+  roi:                  [90, 90]
   datasets_dir:         "datasets/bom_bom"
   reference_image_path: "datasets/bom_bom/reference.png"
   max_distance:         100.0
