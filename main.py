@@ -18,7 +18,6 @@ def main() -> None:
     rtl_runner: Final[RtlLapdSimulationRunner] = RtlLapdSimulationRunner(
         project_root = project_root,
         config_path  = config_path,
-        global_cfg   = config.global_cfg,
         optics_cfg   = config.optics_cfg
     )
 

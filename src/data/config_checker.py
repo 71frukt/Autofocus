@@ -3,21 +3,6 @@ from pathlib import Path
 from typing import Any, Final
 import yaml
 
-
-@dataclass(frozen=True)
-class GlobalConfig:
-    simulator:      str
-
-    def __post_init__(self) -> None:
-        
-        valid_simulators: Final[list[str]] = ["icarus", "verilator", "questa", "modelsim"]
-        if self.simulator not in valid_simulators:
-            raise ValueError(
-                f"Unsupported simulator backend '{self.simulator}', "
-                f"use one of {valid_simulators}"
-            )
-
-
 @dataclass(frozen=True)
 class OpticsConfig:
     img_resolution:       tuple[int, int]
@@ -63,7 +48,6 @@ class FocusFinderConfig:
 
 @dataclass(frozen=True)
 class AppConfig:
-    global_cfg:       GlobalConfig
     optics_cfg:       OpticsConfig
     focus_finder_cfg: FocusFinderConfig
 
@@ -78,11 +62,6 @@ class AppConfig:
             raw_data: dict[str, Any] = yaml.safe_load(f)
 
         try:
-            g_data: dict[str, Any] = raw_data["global"]
-            global_obj: GlobalConfig = GlobalConfig(
-                simulator      = str  (g_data["simulator"])
-            )
-
             o_data: dict[str, Any] = raw_data["optics"]
             optics_obj: OpticsConfig = OpticsConfig(
                 img_resolution       = tuple(o_data["img_resolution"]),
@@ -101,8 +80,7 @@ class AppConfig:
                 lsm_points = int(o_data["lsm_points"])
             )
 
-            return cls(global_cfg       = global_obj,
-                       optics_cfg       = optics_obj,
+            return cls(optics_cfg       = optics_obj,
                        focus_finder_cfg = focus_finder_obj)
 
         except KeyError as e:
