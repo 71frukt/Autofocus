@@ -16,26 +16,29 @@ def main() -> None:
     config: Final[AppConfig] = AppConfig.load(config_path)
 
     rtl_runner: Final[RtlLapdSimulationRunner] = RtlLapdSimulationRunner(
-        project_root = project_root,
-        config_path  = config_path,
-        optics_cfg   = config.optics_cfg
+        project_root     = project_root,
+        optics_cfg       = config.optics_cfg,
+        focus_finder_cfg = config.focus_finder_cfg
     )
 
     print("[INFO] starting hardware rtl simulation pipeline")
     print("-" * 70)
     
-    points: Final[np.ndarray] = rtl_runner.run_focus_evaluation()
+    rtl_metrics: Final[np.ndarray] = rtl_runner.run_focus_evaluation()
+
+    
+    num_steps = config.focus_finder_cfg.num_scans
+    step_size = float(config.optics_cfg.max_distance) / num_steps
+    distances = [step * step_size for step in range(num_steps)]
+
+    points = np.column_stack((distances, rtl_metrics))
 
     print("-" * 70)
-    print(f"{'step':<8}{'distance (mm)':<18}{'rtl metric score (ticks)':<25}")
+    print(f"{'step':<6} {'dist (mm)':<15} {'score':<10}")
     print("-" * 70)
-    
-    for step in range(len(points)):
-        dist:  float
-        score: float
-        dist, score = points[step]
-        print(f"[{step:2}]    {dist:<18.2f}{score:<25.2f}")
-    print("-" * 70)
+
+    for step in range(num_steps):
+        print(f"{step:<6} {distances[step]:<15.3f} {rtl_metrics[step]:<10.0f}")
 
     ideal_dist: Final[float] = find_parabola_maximum(choose_pivot_points(points, config.focus_finder_cfg.lsm_points))
     print(f"maximum image sharpness found at distance {ideal_dist:.2f} mm")

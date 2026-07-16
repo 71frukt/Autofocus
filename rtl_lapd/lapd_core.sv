@@ -1,11 +1,12 @@
 `timescale 1ns / 1ps
 
 module lapd_core  #(
-    parameter int COLOR_WIDTH = 8,
-    parameter int IMG_WIDTH   = 1920,
-    parameter int IMG_HEIGHT  = 1080,
-    parameter int ROI_WIDTH   = 200,
-    parameter int ROI_HEIGHT  = 200
+    parameter COLOR_WIDTH   = 8,
+    parameter METRICS_WIDTH = 32,
+    parameter IMG_WIDTH     = 1920,
+    parameter IMG_HEIGHT    = 1080,
+    parameter ROI_WIDTH     = 200,
+    parameter ROI_HEIGHT    = 200
 ) (
     input  logic        clk,
     input  logic        rst,
@@ -15,7 +16,7 @@ module lapd_core  #(
     input  logic                     s_axis_valid,
     output logic                     s_axis_ready,
 
-    output logic [31:0]              metric_out,
+    output logic [METRICS_WIDTH-1:0] metric_out,
     output logic                     metric_valid
 );
 
@@ -64,7 +65,7 @@ module lapd_core  #(
     //---------------------------------------------------------------
 
     logic [COLOR_WIDTH+1:0] rgb_sum;
-    logic [COLOR_WIDTH:0]   intensity_data;
+    logic [COLOR_WIDTH-1:0] intensity_data;
 
     assign rgb_sum =  cropper_data[COLOR_WIDTH-1:0]
                     + (cropper_data[2*COLOR_WIDTH-1:COLOR_WIDTH] << 1)
