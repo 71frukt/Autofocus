@@ -2,7 +2,7 @@
 
 module lapd_core  #(
     parameter COLOR_WIDTH   = 8,
-    parameter METRICS_WIDTH = 32,
+    parameter METRIC_WIDTH = 32,
     parameter IMG_WIDTH     = 1920,
     parameter IMG_HEIGHT    = 1080,
     parameter ROI_WIDTH     = 200,
@@ -16,7 +16,7 @@ module lapd_core  #(
     input  logic                     s_axis_valid,
     output logic                     s_axis_ready,
 
-    output logic [METRICS_WIDTH-1:0] metric_out,
+    output logic [METRIC_WIDTH-1:0] metric_out,
     output logic                     metric_valid
 );
 
@@ -117,19 +117,20 @@ module lapd_core  #(
     //---------------------------------------------------------------
 
     metrics_counter #(
-        .DATA_WIDTH   (COLOR_WIDTH)
+        .DATA_WIDTH      (COLOR_WIDTH),
+        .METRIC_WIDTH    (METRIC_WIDTH)
     ) u_metrics_counter (
-        .clk          (clk),
-        .rst          (rst),
+        .clk             (clk),
+        .rst             (rst),
 
-        .s_axis_data  (window_data),
-        .s_axis_valid (window_valid),
-        .s_axis_ready (window_ready),
-        .s_axis_last  (window_last),
-        .s_axis_user  (window_user),
+        .s_axis_data     (window_data),
+        .s_axis_valid    (window_valid),
+        .s_axis_ready    (window_ready),
+        .s_axis_last     (window_last),
+        .s_axis_user     (window_user),
 
-        .metric_out    (metric_out),
-        .metric_valid  (metric_valid)
+        .metric_out      (metric_out),
+        .metric_valid    (metric_valid)
     );
 
 endmodule

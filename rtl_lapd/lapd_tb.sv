@@ -2,7 +2,7 @@
 
 module lapd_tb #(
     parameter COLOR_WIDTH     = 8,
-    parameter METRICS_WIDTH   = 32,
+    parameter METRIC_WIDTH   = 32,
 
     parameter IMG_WIDTH       = 1920,
     parameter IMG_HEIGHT      = 1080,
@@ -21,12 +21,12 @@ module lapd_tb #(
     logic                     pixel_valid = 0;
     logic                     pixel_ready;
 
-    logic [METRICS_WIDTH-1:0] metrics_data;
+    logic [METRIC_WIDTH-1:0] metrics_data;
     logic                     metrics_valid;
     
 
     lapd_core #(
-        .METRICS_WIDTH (METRICS_WIDTH),
+        .METRIC_WIDTH (METRIC_WIDTH),
         .COLOR_WIDTH   (COLOR_WIDTH),
         .IMG_WIDTH     (IMG_WIDTH  ),
         .IMG_HEIGHT    (IMG_HEIGHT ),
