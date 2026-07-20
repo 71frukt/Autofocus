@@ -16,7 +16,7 @@ module lapd_core  #(
     input  logic                     s_axis_valid,
     output logic                     s_axis_ready,
 
-    output logic [METRIC_WIDTH-1:0] metric_out,
+    output logic [METRIC_WIDTH-1:0]  metric_out,
     output logic                     metric_valid
 );
 
@@ -64,16 +64,14 @@ module lapd_core  #(
 
     //---------------------------------------------------------------
 
-    logic [COLOR_WIDTH+1:0] rgb_sum;
+    
     logic [COLOR_WIDTH-1:0] intensity_data;
 
-    assign rgb_sum =  cropper_data[COLOR_WIDTH-1:0]
-                    + (cropper_data[2*COLOR_WIDTH-1:COLOR_WIDTH] << 1)
-                    +  cropper_data[3*COLOR_WIDTH-1:2*COLOR_WIDTH];
+    assign intensity_data = COLOR_WIDTH'( (10'(cropper_data[COLOR_WIDTH-1:0])
+                                         + 10'(cropper_data[2*COLOR_WIDTH-1:COLOR_WIDTH]) << 1
+                                         + 10'(cropper_data[3*COLOR_WIDTH-1:2*COLOR_WIDTH])) 
+                                        >> 2);
     
-    assign intensity_data = rgb_sum[COLOR_WIDTH+1:2];
-
-
     window #(
         .DATA_WIDTH      (COLOR_WIDTH),
         .N               (3),
@@ -81,10 +79,10 @@ module lapd_core  #(
         .ANCHOR_I        (1),
         .ANCHOR_J        (1),
         .MASK_MODE       (1),            // edge duplicate
-        .MAX_HEIGHT      (ROI_HEIGHT),
-        .MAX_WIDTH       (ROI_WIDTH),
-        .FRAME_H_WIDTH   (FRAME_H_WIDTH),
-        .FRAME_V_WIDTH   (FRAME_V_WIDTH),
+        .MAX_HEIGHT      (ROI_HEIGHT    ),
+        .MAX_WIDTH       (ROI_WIDTH     ),
+        .FRAME_H_WIDTH   (FRAME_H_WIDTH ),
+        .FRAME_V_WIDTH   (FRAME_V_WIDTH ),
         .SCALED_H_WIDTH  (SCALED_H_WIDTH),
         .SCALED_V_WIDTH  (SCALED_V_WIDTH),
         .INPUT_BUF_DEPTH (4)
@@ -92,26 +90,25 @@ module lapd_core  #(
         .clk             (clk),
         .rst             (rst),
         .enable          (1'b1),
+        .iterations_x_i  ('1),
+        .iterations_y_i  ('1),
 
-        // Настройки геометрии (200х200)
-        .frame_height_i  (FRAME_V_WIDTH'(ROI_HEIGHT)),
-        .frame_width_i   (FRAME_H_WIDTH'(ROI_WIDTH)),
+        .frame_height_i  (FRAME_V_WIDTH' (ROI_HEIGHT)),
+        .frame_width_i   (FRAME_H_WIDTH' (ROI_WIDTH )),
         .scaled_height_i (SCALED_V_WIDTH'(ROI_HEIGHT)),
-        .scaled_width_i  (SCALED_H_WIDTH'(ROI_WIDTH)),
+        .scaled_width_i  (SCALED_H_WIDTH'(ROI_WIDTH )),
 
-        // Входной поток от кроппера
         .s_axis_data     (intensity_data),
-        .s_axis_valid    (cropper_valid),
-        .s_axis_ready    (cropper_ready),
-        .s_axis_last     (cropper_last),
-        .s_axis_user     (cropper_user),
+        .s_axis_valid    (cropper_valid ),
+        .s_axis_ready    (cropper_ready ),
+        .s_axis_last     (cropper_last  ),
+        .s_axis_user     (cropper_user  ),
 
-        // Выходной поток окон к сумматору
-        .m_axis_data     (window_data),
+        .m_axis_data     (window_data ),
         .m_axis_valid    (window_valid),
         .m_axis_ready    (window_ready),
-        .m_axis_last     (window_last),
-        .m_axis_user     (window_user)
+        .m_axis_last     (window_last ),
+        .m_axis_user     (window_user )
     );
 
     //---------------------------------------------------------------
@@ -127,7 +124,6 @@ module lapd_core  #(
         .s_axis_valid    (window_valid),
         .s_axis_ready    (window_ready),
         .s_axis_last     (window_last),
-        .s_axis_user     (window_user),
 
         .metric_out      (metric_out),
         .metric_valid    (metric_valid)

@@ -2,18 +2,18 @@ global:
   simulator: "icarus"
 
 optics:
-  img_resolution:       [20, 20]
-  roi:                  [20, 20]
+  img_resolution:       [100, 100]
+  roi:                  [100, 100]
   datasets_dir:         "datasets/bom_bom"
   reference_image_path: "datasets/bom_bom/reference.png"
   max_distance:         100.0
   step_size:            1.0
-  ideal_focus_distance: 45.0
+  ideal_focus_distance: 50.0
   blur_sensitivity:     0.4
 
 focus_finder:
   # number of equidistant points along the lens movement distance, 
   # for which the points with the maximum metric for the LSM are searched
-  num_scans:  16  
+  num_scans:  16
   
   lsm_points: 3

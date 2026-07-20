@@ -11,7 +11,6 @@ module metrics_counter #(
     input  logic                       s_axis_valid,
     output logic                       s_axis_ready,
     input  logic                       s_axis_last,  // ROI  end flag
-    input  logic                       s_axis_user,  // line end flag
 
     output logic [METRIC_WIDTH-1:0]    metric_out,
     output logic                       metric_valid
@@ -29,7 +28,7 @@ module metrics_counter #(
         end
     end
 
-    // --- 4-stage Pipeline ---
+    // --- 4-stage Pipeline --------------------------------------------------------
     logic v_st1, v_st2, v_st3;  // pipeline valid
     logic l_st1, l_st2, l_st3;  // pipeline last
     
@@ -38,7 +37,7 @@ module metrics_counter #(
         l_st1 <= s_axis_last;   l_st2 <= l_st1;  l_st3 <= l_st2;
     end
 
-    // stage 1
+    // stage 1 ----------------------------------------------------------------------
     logic signed [DATA_WIDTH+2:0] res_k_raw;
     logic signed [DATA_WIDTH+2:0] res_kd1_raw;
     logic signed [DATA_WIDTH+2:0] res_kd2_raw;
@@ -66,7 +65,7 @@ module metrics_counter #(
         end
     end
 
-    // stage 2
+    // stage 2 ----------------------------------------------------------------------
     logic [DATA_WIDTH+2+10:0] abs_k;
     logic [DATA_WIDTH+2+10:0] abs_kd1;
     logic [DATA_WIDTH+2+10:0] abs_kd2;
@@ -77,14 +76,14 @@ module metrics_counter #(
         abs_kd2 <= (res_kd2_raw < 0 ? -res_kd2_raw : res_kd2_raw) * COEF_707;
     end
 
+    // stage 3 ----------------------------------------------------------------------
     logic [DATA_WIDTH+2+10+2:0] pix_lapd;
 
-    // stage 3
     always_ff @(posedge clk) begin
         pix_lapd <= abs_k + abs_kd1 + abs_kd2;
     end
 
-    // stage 4
+    // stage 4 ----------------------------------------------------------------------
     logic [47:0] frame_acc;
 
     assign s_axis_ready = 1'b1;
@@ -99,9 +98,6 @@ module metrics_counter #(
         else begin
             if (v_st3) begin
                 if (l_st3) begin
-                    // Конец кадра ROI: выдаем результат
-                    // Сдвигаем обратно на 10 бит (отмена fixed-point масштаба), 
-                    // чтобы результат соответствовал порядку величин в Python
                     metric_out   <= 32'((frame_acc + pix_lapd) >> 10);
                     metric_valid <= 1'b1;
                     frame_acc    <= '0;

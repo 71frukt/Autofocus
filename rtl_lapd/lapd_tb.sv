@@ -21,7 +21,7 @@ module lapd_tb #(
     logic                     pixel_valid = 0;
     logic                     pixel_ready;
 
-    logic [METRIC_WIDTH-1:0] metrics_data;
+    logic [METRIC_WIDTH-1:0]  metrics_data;
     logic                     metrics_valid;
     
 

@@ -68,6 +68,4 @@ module roi_cropper #(
         end
     end
 
-    
-
 endmodule
