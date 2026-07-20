@@ -68,8 +68,8 @@ module lapd_core  #(
     logic [COLOR_WIDTH-1:0] intensity_data;
 
     assign intensity_data = COLOR_WIDTH'( (10'(cropper_data[COLOR_WIDTH-1:0])
-                                         + 10'(cropper_data[2*COLOR_WIDTH-1:COLOR_WIDTH]) << 1
-                                         + 10'(cropper_data[3*COLOR_WIDTH-1:2*COLOR_WIDTH])) 
+                                        + (10'(cropper_data[2*COLOR_WIDTH-1:COLOR_WIDTH]) << 1)
+                                        +  10'(cropper_data[3*COLOR_WIDTH-1:2*COLOR_WIDTH])) 
                                         >> 2);
     
     window #(
