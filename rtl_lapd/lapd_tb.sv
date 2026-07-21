@@ -44,7 +44,7 @@ module lapd_tb #(
 
 
     // 100 MHz
-    always #5 clk = ~clk;
+    always #5 clk <= ~clk;
 
     int metrics_fd;
     int metrics_received = 0;
@@ -109,7 +109,7 @@ module lapd_tb #(
     always @(posedge clk) begin
         if (metrics_valid) begin
             $fdisplay(metrics_fd, "%d", metrics_data);
-            ++metrics_received;
+            metrics_received <= metrics_received + 1;
         end
     end
 
