@@ -25,7 +25,7 @@ python3 -m venv .venv
 ### Модуль на FPGA
 
 ```zsh
-cd fpga/build
+mkdir -p fpga/build && cd fpga/build
 vivado
 ```
 
