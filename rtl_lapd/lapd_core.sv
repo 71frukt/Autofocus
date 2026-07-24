@@ -2,7 +2,7 @@
 
 module lapd_core  #(
     parameter COLOR_WIDTH   = 8,
-    parameter METRIC_WIDTH = 32,
+    parameter METRIC_WIDTH  = 32,
     parameter IMG_WIDTH     = 1920,
     parameter IMG_HEIGHT    = 1080,
     parameter ROI_WIDTH     = 200,

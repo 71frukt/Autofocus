@@ -8,7 +8,7 @@ git clone https://github.com/71frukt/Autofocus.git
 cd Autofocus
 ```
 
-* В корневую папку необходимо добавить модуль `window_final`
+* В папку `lib` необходимо добавить модуль `window_final`
 
 
 Создание виртуального окружения python
@@ -20,4 +20,16 @@ python3 -m venv .venv
 Запуск 
 ```zsh
 ./.venv/bin/python main.py
+```
+
+### Модуль на FPGA
+
+```zsh
+cd fpga/build
+vivado
+```
+
+в tcl консоли:
+```
+source ../create_project.tcl
 ```

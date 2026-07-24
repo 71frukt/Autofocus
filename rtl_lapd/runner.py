@@ -36,7 +36,7 @@ class RtlLapdSimulationRunner:
         lapd_core_source   = self._rtl_dir / "lapd_core.sv"
         top_source         = self._rtl_dir / "lapd_tb.sv"
 
-        window_dir = (self._rtl_dir / ".." / "window_final").resolve()
+        window_dir = (self._rtl_dir / ".." / "lib" / "window_final").resolve()
         if not window_dir.exists():
             raise FileNotFoundError(f"The window_final directory was not found: {window_dir}")
         

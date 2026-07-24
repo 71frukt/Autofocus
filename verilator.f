@@ -1,4 +1,4 @@
 -Irtl_lapd
 -Isrc
--Iwindow_final
-+incdir+window_final/include
+-Ilib/window_final
++incdir+lib/window_final/include

@@ -63,7 +63,7 @@ CMakePresets.json
 *.log
 log/*
 
-build/*
+build/
 
 # tex
 *.aux
@@ -77,7 +77,7 @@ build/*
 
 
 # user
-window_final
+lib/window_final
 .venv
 __pycache__/
 datasets/bom_bom/dataset*
